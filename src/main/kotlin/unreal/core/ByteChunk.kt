@@ -16,6 +16,8 @@ class ByteChunk(bytes: ByteArray) {
 
     val buffer: ByteBuffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
 
+    fun chunk(size: Int) = ByteChunk(buffer.read(size))
+
     val int: Int
         get() = buffer.int
 

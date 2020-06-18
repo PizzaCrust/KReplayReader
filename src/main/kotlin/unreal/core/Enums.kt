@@ -9,3 +9,11 @@ object ReplayVersionHistory {
     const val HISTORY_FRIENDLY_NAME_ENCODING = 5
     const val HISTORY_ENCRYPTION = 6
 }
+
+object ReplayChunkType {
+    const val Header = 0
+    const val ReplayData = 1
+    const val Checkpoint = 2
+    const val Event = 3
+    const val Unknown = 0xFFFFFFFF
+}

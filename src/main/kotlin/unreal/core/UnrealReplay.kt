@@ -1,7 +1,6 @@
 package unreal.core
 
-
-@ChunkSerializable data class UnrealReplay(val magic: Int, val meta: Meta) {
+@ChunkSerializable data class UnrealReplay(val magic: Int, val meta: Meta, val data: EOFReplayChunks) {
     @ChunkSerializable data class Meta(val fileVersion: Int,
                                        val lengthInMs: Int,
                                        val networkVersion: Int,
@@ -32,6 +31,28 @@ package unreal.core
             override fun toString(): String {
                 return "VersionBasedHandling(timestamp=$timestamp, isCompressed=$isCompressed, isEncrypted=$isEncrypted, encryptionKey=${encryptionKey?.contentToString()})"
             }
+        }
+    }
+    class EOFReplayChunks: ChunkHandler {
+        lateinit var chunks: List<ReplayChunk>
+        @ChunkSerializable data class ReplayChunk(val type: Int, val size: Int, val data: ChunkData) {
+            class ChunkData: ChunkHandler {
+                lateinit var data: ByteChunk
+                override fun handle(values: List<Any>, chunk: ByteChunk) {
+                    data = chunk.chunk(values[1] as Int)
+                }
+            }
+        }
+        @ExperimentalStdlibApi
+        override fun handle(values: List<Any>, chunk: ByteChunk) {
+            val c = mutableListOf<ReplayChunk>()
+            while (chunk.buffer.hasRemaining()) {
+                c.add(chunk.deserialize())
+            }
+            chunks = c
+        }
+        override fun toString(): String {
+            return "EOFReplayChunks(chunks=$chunks)"
         }
     }
 }
