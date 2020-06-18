@@ -22,7 +22,7 @@ class ByteChunk(bytes: ByteArray) {
     val long: Long
         get() = buffer.long
 
-    val intBoolean: Boolean
+    val boolean: Boolean
         get() = int != 0
 
     val short: Short
