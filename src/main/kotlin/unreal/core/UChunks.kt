@@ -1,6 +1,8 @@
 package unreal.core
 
-class HeaderChunk: ByteSchema() {
+import java.nio.ByteBuffer
+
+class HeaderChunk internal constructor(): ByteSchema() {
     val networkMagic: Int by bytes(int32)
     val networkVersion: Int by staticBytes({ networkMagic == 0x2CF5A13D }, int32)
     val networkChecksum: Int by staticBytes({ networkVersion >= NetworkVersionHistory.HISTORY_EXTRA_VERSION }, int32)
@@ -24,4 +26,26 @@ class HeaderChunk: ByteSchema() {
 val UReplay.Chunk.asHeader: HeaderChunk
     get() = HeaderChunk().apply {
         this.read(this@asHeader.data)
+    }
+
+class EventChunk internal constructor(uReplay: UReplay): ByteSchema() {
+    val id: String by bytes(string)
+    val group: String by bytes(string)
+    val metadata: String by bytes(string)
+    val startTime: Int by bytes(int32)
+    val endTime: Int by bytes(int32)
+    val sizeInBytes: Int by bytes(int32)
+    val data: ByteBuffer by bytes {
+        val encryptedBuffer = slice(sizeInBytes)
+        if (uReplay.meta.isEncrypted == true) {
+            encryptedBuffer.decrypt(uReplay.meta.encryptionKey!!.arrayLimit(), sizeInBytes)
+        } else {
+            encryptedBuffer
+        }
+    }
+}
+
+val UReplay.Chunk.asEvent: EventChunk
+    get() = EventChunk(uReplay).apply {
+        this.read(this@asEvent.data)
     }

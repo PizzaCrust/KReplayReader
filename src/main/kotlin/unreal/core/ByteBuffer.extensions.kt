@@ -41,3 +41,10 @@ fun ByteBuffer.slice(limit: Int): ByteBuffer = this.slice().apply {
     order(this@slice.order());
     this@slice.position(this@slice.position() + limit)
 }
+
+fun ByteBuffer.arrayLimit(): ByteArray {
+    val oldPos = position()
+    val bytes = read(limit())
+    position(oldPos)
+    return bytes
+}

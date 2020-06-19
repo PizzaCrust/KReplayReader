@@ -6,10 +6,15 @@ import java.lang.NullPointerException
 import java.nio.ByteBuffer
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.memberProperties
 
 internal typealias ConditionalBlock = () -> Boolean
 internal typealias ByteReadBlock<T> = ByteBuffer.() -> T
+
+@Target(AnnotationTarget.PROPERTY)
+annotation class IgnoreSchema
 
 abstract class ByteSchema {
 
@@ -50,6 +55,7 @@ abstract class ByteSchema {
     override fun toString(): String {
         val properties = mutableListOf<String>()
         this::class.memberProperties.forEach { it ->
+            if (it.findAnnotation<IgnoreSchema>() != null) return@forEach
             val property = it as KProperty1<ByteSchema, Any?>
             val propertyValue = buildString {
                 val value = property.get(this@ByteSchema)
@@ -93,5 +99,9 @@ fun main() {
     println(UReplay().apply {
         read(ByteBuffer(File("season12.replay")))
         println(this.chunks.first { it.type == ReplayChunkType.HEADER }.asHeader)
+        chunks.filter { it.type == ReplayChunkType.EVENT }.forEach {
+            val eventChunk = it.asEvent
+            println(eventChunk)
+        }
     })
 }

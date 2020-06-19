@@ -24,7 +24,7 @@ class UReplay: ByteSchema() {
 
     lateinit var meta: Meta
 
-    class Chunk internal constructor(): ByteSchema() {
+    class Chunk internal constructor(@IgnoreSchema val uReplay: UReplay): ByteSchema() {
 
         val type: ReplayChunkType by bytes {
             val type = int
@@ -44,7 +44,7 @@ class UReplay: ByteSchema() {
         }
         val chunks = mutableListOf<Chunk>()
         while (buffer.hasRemaining()) {
-            chunks.add(Chunk().apply {
+            chunks.add(Chunk(this).apply {
                 read(buffer)
             })
         }
