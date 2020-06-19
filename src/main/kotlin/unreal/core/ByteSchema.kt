@@ -45,7 +45,7 @@ abstract class ByteSchema {
 
     fun <T> bytes(byteReadBlock: ByteReadBlock<T>): NonNullableSchemaDelegate<T> = staticBytes({ true }, byteReadBlock)
 
-    fun read(buffer: ByteBuffer) = definitions.forEach { it.read(buffer) }
+    open fun read(buffer: ByteBuffer) = definitions.forEach { it.read(buffer) }
 
     override fun toString(): String {
         val properties = mutableListOf<String>()
@@ -72,7 +72,12 @@ class TestSchema: ByteSchema() {
 }
 
 fun main() {
+    /*
     println(TestSchema().apply {
+        read(ByteBuffer(File("season12.replay")))
+    })
+     */
+    println(UReplay().apply {
         read(ByteBuffer(File("season12.replay")))
     })
 }
