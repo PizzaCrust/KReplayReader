@@ -27,7 +27,7 @@ val ByteBuffer.string: String
         return String(data).trim { it <= ' ' }.replace(("\u0000").toRegex(), "")
     }
 
-fun ByteBuffer.guid(size: Int = 16) = read(size).joinToString { "%02x".format(it) }
+fun ByteBuffer.guid(size: Int = 16) = read(size).joinToString("") { "%02x".format(it) }
 
 fun ByteBuffer.decrypt(key: ByteArray,
             size: Int): ByteBuffer {
@@ -36,4 +36,8 @@ fun ByteBuffer.decrypt(key: ByteArray,
     return ByteBuffer(*cipher.doFinal(read(size)))
 }
 
-fun ByteBuffer.slice(limit: Int): ByteBuffer = this.slice().apply { limit(limit); this@slice.position(this@slice.position() + limit) }
+fun ByteBuffer.slice(limit: Int): ByteBuffer = this.slice().apply {
+    limit(limit);
+    order(this@slice.order());
+    this@slice.position(this@slice.position() + limit)
+}

@@ -51,9 +51,22 @@ abstract class ByteSchema {
         val properties = mutableListOf<String>()
         this::class.memberProperties.forEach { it ->
             val property = it as KProperty1<ByteSchema, Any?>
-            properties.add("${property.name}=${property.get(this)}")
+            val propertyValue = buildString {
+                val value = property.get(this@ByteSchema)
+                if (value != null) {
+                    val valueClass = value::class.java
+                    when {
+                        String::class.java.isAssignableFrom(valueClass) -> append("'$value'")
+                        ByteBuffer::class.java.isAssignableFrom(valueClass) -> append("Binary")
+                        else -> append(value)
+                    }
+                } else {
+                    append("null")
+                }
+            }
+            properties.add("${property.name}=$propertyValue")
         }
-        return "${this::class.simpleName}(${properties.joinToString()})"
+        return "${this::class.simpleName}{${properties.joinToString()}}"
     }
 
 }
@@ -79,5 +92,6 @@ fun main() {
      */
     println(UReplay().apply {
         read(ByteBuffer(File("season12.replay")))
+        println(this.chunks.first { it.type == ReplayChunkType.HEADER }.asHeader)
     })
 }
