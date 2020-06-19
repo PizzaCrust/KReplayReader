@@ -26,7 +26,10 @@ class UReplay: ByteSchema() {
 
     class Chunk internal constructor(): ByteSchema() {
 
-        val type: Int by bytes(int32)
+        val type: ReplayChunkType by bytes {
+            val type = int
+            ReplayChunkType.values().firstOrNull { it.ordinal == type } ?: ReplayChunkType.UNKNOWN
+        }
         val size: Int by bytes(int32)
         val data: ByteBuffer by bytes { slice(size) }
 
