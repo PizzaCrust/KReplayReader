@@ -36,4 +36,4 @@ fun ByteBuffer.decrypt(key: ByteArray,
     return ByteBuffer(*cipher.doFinal(read(size)))
 }
 
-fun ByteBuffer.slice(limit: Int): ByteBuffer = this.slice().apply { limit(limit) }
+fun ByteBuffer.slice(limit: Int): ByteBuffer = this.slice().apply { limit(limit); this@slice.position(this@slice.position() + limit) }

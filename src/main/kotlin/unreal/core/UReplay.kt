@@ -24,11 +24,28 @@ class UReplay: ByteSchema() {
 
     lateinit var meta: Meta
 
+    class Chunk internal constructor(): ByteSchema() {
+
+        val type: Int by bytes(int32)
+        val size: Int by bytes(int32)
+        val data: ByteBuffer by bytes { slice(size) }
+
+    }
+
+    lateinit var chunks: List<Chunk>
+
     override fun read(buffer: ByteBuffer) {
         super.read(buffer)
         meta = Meta(this).apply {
             read(buffer)
         }
+        val chunks = mutableListOf<Chunk>()
+        while (buffer.hasRemaining()) {
+            chunks.add(Chunk().apply {
+                read(buffer)
+            })
+        }
+        this.chunks = chunks
     }
 
 }
