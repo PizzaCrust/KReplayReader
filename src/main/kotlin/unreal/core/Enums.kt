@@ -1,5 +1,7 @@
 package unreal.core
 
+import java.lang.UnsupportedOperationException
+
 /*
 object ReplayVersionHistory {
     const val HISTORY_INITAL = 0
@@ -51,4 +53,9 @@ enum class NetworkVersionHistory {
     HISTORY_CHARACTER_MOVEMENT_NOINTERP;
 
     val value = ordinal + 1
+
+    operator fun compareTo(i: Int): Int = this.value.compareTo(i)
+
 }
+
+operator fun Int.compareTo(networkVersionHistory: NetworkVersionHistory) = compareTo(networkVersionHistory.value)
