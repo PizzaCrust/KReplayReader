@@ -25,6 +25,7 @@ class HeaderChunk internal constructor(): ByteSchema() {
 
 val UReplay.Chunk.asHeader: HeaderChunk
     get() = HeaderChunk().apply {
+        assert(this@asHeader.type == ReplayChunkType.HEADER)
         this.read(this@asHeader.data)
     }
 
@@ -47,5 +48,6 @@ class EventChunk internal constructor(uReplay: UReplay): ByteSchema() {
 
 val UReplay.Chunk.asEvent: EventChunk
     get() = EventChunk(uReplay).apply {
+        assert(this@asEvent.type == ReplayChunkType.EVENT)
         this.read(this@asEvent.data)
     }
