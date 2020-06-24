@@ -19,7 +19,7 @@ class HeaderChunk internal constructor(): ByteSchema() {
     val engineNetworkVersion: Int by bytes(int32)
     val gameNetworkProtocolVersion: Int by bytes(int32)
     val id: String? by bytes({ networkVersion >= NetworkVersionHistory.HISTORY_HEADER_GUID }, guid)
-    val major: Short? by bytes({ println(id); networkVersion >= NetworkVersionHistory.HISTORY_SAVE_FULL_ENGINE_VERSION }, int16)
+    val major: Short? by bytes({ networkVersion >= NetworkVersionHistory.HISTORY_SAVE_FULL_ENGINE_VERSION }, int16)
     val minor: Short? by bytes({ networkVersion >= NetworkVersionHistory.HISTORY_SAVE_FULL_ENGINE_VERSION }, int16)
     val patch: Short? by bytes({ networkVersion >= NetworkVersionHistory.HISTORY_SAVE_FULL_ENGINE_VERSION }, int16)
     private val changelist1: Int? by bytes({ networkVersion >= NetworkVersionHistory
@@ -41,7 +41,7 @@ class HeaderChunk internal constructor(): ByteSchema() {
 val UReplay.Chunk.asHeader: HeaderChunk
     get() = HeaderChunk().apply {
         assert(this@asHeader.type == ReplayChunkType.HEADER)
-        this.read(this@asHeader.data)
+        this.read(this@asHeader.data, true)
     }
 
 class EventChunk internal constructor(uReplay: UReplay): ByteSchema() {
@@ -64,5 +64,5 @@ class EventChunk internal constructor(uReplay: UReplay): ByteSchema() {
 val UReplay.Chunk.asEvent: EventChunk
     get() = EventChunk(uReplay).apply {
         assert(this@asEvent.type == ReplayChunkType.EVENT)
-        this.read(this@asEvent.data)
+        this.read(this@asEvent.data, true)
     }

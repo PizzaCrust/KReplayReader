@@ -37,8 +37,14 @@ class UReplay: ByteSchema() {
 
     lateinit var chunks: List<Chunk>
 
-    override fun read(buffer: ByteBuffer) {
-        super.read(buffer)
+    val header: HeaderChunk
+        get() = chunks.firstOrNull { it.type == ReplayChunkType.HEADER}?.asHeader ?: throw UnsupportedOperationException()
+
+    val events: List<EventChunk>
+        get() = chunks.filter { it.type == ReplayChunkType.EVENT }.map { it.asEvent }
+
+    override fun read(buffer: ByteBuffer, rewind: Boolean) {
+        super.read(buffer, false)
         meta = Meta(this).apply {
             read(buffer)
         }
@@ -49,6 +55,7 @@ class UReplay: ByteSchema() {
             })
         }
         this.chunks = chunks
+        if (rewind) buffer.rewind()
     }
 
 }

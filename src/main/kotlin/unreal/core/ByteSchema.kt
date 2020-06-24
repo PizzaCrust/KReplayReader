@@ -51,7 +51,10 @@ abstract class ByteSchema {
 
     fun <T> bytes(byteReadBlock: ByteReadBlock<T>): NonNullableSchemaDelegate<T> = staticBytes({ true }, byteReadBlock)
 
-    open fun read(buffer: ByteBuffer) = definitions.forEach { it.read(buffer) }
+    open fun read(buffer: ByteBuffer, rewind: Boolean = false) {
+        definitions.forEach { it.read(buffer) }
+        if (rewind) buffer.rewind()
+    }
 
     override fun toString(): String {
         val properties = mutableListOf<String>()

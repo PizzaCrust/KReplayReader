@@ -37,7 +37,7 @@ fun ByteBuffer.decrypt(key: ByteArray,
 }
 
 fun ByteBuffer.slice(limit: Int): ByteBuffer = this.slice().apply {
-    limit(limit);
+    limit(limit)
     order(this@slice.order());
     this@slice.position(this@slice.position() + limit)
 }
