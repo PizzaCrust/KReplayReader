@@ -45,3 +45,42 @@ enum class NetworkVersionHistory {
 }
 
 operator fun Int.compareTo(networkVersionHistory: NetworkVersionHistory) = compareTo(networkVersionHistory.value)
+
+
+enum class EngineNetworkVersionHistory {
+    HISTORY_INITIAL,
+    HISTORY_REPLAY_BACKWARDS_COMPAT,
+    HISTORY_MAX_ACTOR_CHANNELS_CUSTOMIZATION,
+    HISTORY_REPCMD_CHECKSUM_REMOVE_PRINTF,
+    HISTORY_NEW_ACTOR_OVERRIDE_LEVEL,
+    HISTORY_CHANNEL_NAMES,
+    HISTORY_CHANNEL_CLOSE_REASON,
+    HISTORY_ACKS_INCLUDED_IN_HEADER,
+    HISTORY_NETEXPORT_SERIALIZATION,
+    HISTORY_NETEXPORT_SERIALIZE_FIX,
+    HISTORY_FAST_ARRAY_DELTA_STRUCT,
+    HISTORY_FIX_ENUM_SERIALIZATION,
+    HISTORY_OPTIONALLY_QUANTIZE_SPAWN_INFO,
+    HISTORY_JITTER_IN_HEADER;
+
+    val value = ordinal + 1
+
+    operator fun compareTo(i: Int): Int = this.value.compareTo(i)
+}
+
+operator fun Int.compareTo(envs: EngineNetworkVersionHistory) = compareTo(envs.value)
+
+enum class ReplayEventType(val value: String) {
+    PLAYER_ELIMINATION("playerElim"),
+    MATCH_STATS("AthenaMatchStats"),
+    TEAM_STATS("AthenaMatchTeamStats"),
+    ENCRYPTION_KEY("PlayerStateEncryptionKey"),
+    CHARACTER_SAMPLE("CharacterSampleMeta"),
+    ZONE_UPDATE("ZoneUpdate"),
+    BATTLE_BUS("BattleBusFlight"),
+    UNKNOWN("Unknown");
+
+    companion object {
+        fun from(str: String) = values().firstOrNull { it.value == str } ?: UNKNOWN
+    }
+}

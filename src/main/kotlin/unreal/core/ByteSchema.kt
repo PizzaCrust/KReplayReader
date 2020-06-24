@@ -1,14 +1,13 @@
 @file:Suppress("UNCHECKED_CAST")
 package unreal.core
 
+import unreal.fortnite.eliminations
 import java.io.File
-import java.lang.NullPointerException
 import java.nio.ByteBuffer
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.memberProperties
 
 internal typealias ConditionalBlock = () -> Boolean
@@ -90,6 +89,7 @@ val int64: ByteReadBlock<Long> = { long }
 val boolean: ByteReadBlock<Boolean> = { boolean }
 val string: ByteReadBlock<String> = { string }
 val guid: ByteReadBlock<String> = { guid() }
+val byte: ByteReadBlock<Byte> = { read(1)[0] }
 
 class TestSchema: ByteSchema() {
     val fileMagic: Int by bytes(int32)
@@ -105,10 +105,17 @@ fun main() {
      */
     println(UReplay().apply {
         read(ByteBuffer(File("season12.replay")))
+        //chunks.forEach(::println)
+        //events.forEach(::println)
+        eliminations.forEach(::println)
+        //(chunks.filter { it.type == ReplayChunkType.EVENT }.forEach(::println))
+
+        /*
         println(this.chunks.first { it.type == ReplayChunkType.HEADER }.asHeader)
         chunks.filter { it.type == ReplayChunkType.EVENT }.forEach {
             val eventChunk = it.asEvent
             println(eventChunk)
-        }
+        }*/
+        //eliminations.forEach(::println)
     })
 }

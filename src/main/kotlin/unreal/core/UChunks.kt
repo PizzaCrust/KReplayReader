@@ -31,9 +31,8 @@ class HeaderChunk internal constructor(): ByteSchema() {
     val changelist: Int?
         get() = changelist1 ?: changelist2
     val levelNamesAndTimesSize: Int by bytes(int32)
-    val skippedLevelData: Unit by bytes {
+    val levelData: ByteBuffer by bytes {
         slice(levelNamesAndTimesSize)
-        Unit
     }
     val flags: Int? by bytes({ networkVersion >= NetworkVersionHistory.HISTORY_HEADER_FLAGS }, int32)
 }
@@ -44,7 +43,7 @@ val UReplay.Chunk.asHeader: HeaderChunk
         this.read(this@asHeader.data, true)
     }
 
-class EventChunk internal constructor(uReplay: UReplay): ByteSchema() {
+class EventChunk internal constructor(@IgnoreSchema internal val uReplay: UReplay): ByteSchema() {
     val id: String by bytes(string)
     val group: String by bytes(string)
     val metadata: String by bytes(string)
