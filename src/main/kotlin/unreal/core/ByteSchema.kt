@@ -6,6 +6,7 @@ import java.lang.NullPointerException
 import java.nio.ByteBuffer
 import kotlin.reflect.KProperty
 import kotlin.reflect.KProperty1
+import kotlin.reflect.KVisibility
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.memberProperties
@@ -57,20 +58,23 @@ abstract class ByteSchema {
         this::class.memberProperties.forEach { it ->
             if (it.findAnnotation<IgnoreSchema>() != null) return@forEach
             val property = it as KProperty1<ByteSchema, Any?>
-            val propertyValue = buildString {
-                val value = property.get(this@ByteSchema)
-                if (value != null) {
-                    val valueClass = value::class.java
-                    when {
-                        String::class.java.isAssignableFrom(valueClass) -> append("'$value'")
-                        ByteBuffer::class.java.isAssignableFrom(valueClass) -> append("Binary")
-                        else -> append(value)
+            if (property.visibility == KVisibility.PUBLIC) {
+                val propertyValue = buildString {
+                    val value = property.get(this@ByteSchema)
+                    if (value != null) {
+                        val valueClass = value::class.java
+                        when {
+                            String::class.java.isAssignableFrom(valueClass) -> append("'$value'")
+                            ByteBuffer::class.java.isAssignableFrom(valueClass) -> append("Binary" +
+                                    " of size ${(value as ByteBuffer).limit()}")
+                            else -> append(value)
+                        }
+                    } else {
+                        append("null")
                     }
-                } else {
-                    append("null")
                 }
+                properties.add("${property.name}=$propertyValue")
             }
-            properties.add("${property.name}=$propertyValue")
         }
         return "${this::class.simpleName}{${properties.joinToString()}}"
     }
