@@ -82,5 +82,6 @@ enum class ReplayEventType(val value: String) {
 
     companion object {
         fun from(str: String) = values().firstOrNull { it.value == str } ?: UNKNOWN
+        fun fromId(str: String) = values().firstOrNull { str.endsWith(it.value) } ?: UNKNOWN
     }
 }

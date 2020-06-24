@@ -2,6 +2,12 @@ package unreal.core
 
 import java.nio.ByteBuffer
 
+/**
+ * Represents an unreal engine replay.
+ * This parses common elements within an unreal engine replay. For fortnite based parsing,
+ * view FNChunks, where Fortnite specific elements are parsed and can be accessed via
+ * extensions.
+ */
 class UReplay: ByteSchema() {
 
     val fileMagic: Int by bytes(int32)

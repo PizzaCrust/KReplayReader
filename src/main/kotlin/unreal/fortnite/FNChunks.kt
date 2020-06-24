@@ -3,6 +3,7 @@ package unreal.fortnite
 import unreal.core.*
 import java.lang.UnsupportedOperationException
 import java.nio.ByteBuffer
+import kotlin.reflect.full.createInstance
 
 class Elimination internal constructor(uReplay: UReplay): ByteSchema() {
 
@@ -70,3 +71,47 @@ val EventChunk.asElim: Elimination
 val UReplay.eliminations: List<Elimination>
     get() = this.events.filter { it.type == ReplayEventType.PLAYER_ELIMINATION }.map { it.asElim }
 
+class MatchStats internal constructor(): ByteSchema() {
+
+    private val unknown: Int by bytes(int32)
+    val accuracy: Float by bytes(float)
+    val assists: Int by bytes(int32)
+    val eliminations: Int by bytes(int32)
+    val weaponDamage: Int by bytes(int32)
+    val otherDamage: Int by bytes(int32)
+    val revives: Int by bytes(int32)
+    val damageTaken: Int by bytes(int32)
+    val damageToStructures: Int by bytes(int32)
+    val materialsGathered: Int by bytes(int32)
+    val materialsUsed: Int by bytes(int32)
+    val totalTravelled: Int by bytes(int32)
+
+}
+
+inline fun <reified T: ByteSchema> ByteBuffer.read(rewind: Boolean = true,
+                                                   block: () -> Unit = {}): T {
+    block()
+    return T::class.createInstance().apply {
+        this.read(this@read, rewind)
+    }
+}
+
+val EventChunk.asMatchStats: MatchStats
+    get() = data.read()
+
+val UReplay.matchStats: MatchStats
+    get() = events.first { ReplayEventType.fromId(it.id) == ReplayEventType.MATCH_STATS }.asMatchStats
+
+class TeamStats internal constructor(): ByteSchema() {
+
+    private val unknown: Int by bytes(int32)
+    val position: Int by bytes(int32)
+    val totalPlayers: Int by bytes(int32)
+
+}
+
+val EventChunk.asTeamStats: TeamStats
+    get() = data.read()
+
+val UReplay.teamStats: TeamStats
+    get() = events.first { ReplayEventType.fromId(it.id) == ReplayEventType.TEAM_STATS }.asTeamStats
