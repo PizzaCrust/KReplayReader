@@ -43,6 +43,13 @@ val UReplay.Chunk.asHeader: HeaderChunk
         this.read(this@asHeader.data, true)
     }
 
+fun UReplay.decrypt(primaryBuffer: ByteBuffer, size: Int): ByteBuffer {
+    val portion = primaryBuffer.slice(size)
+    return if (meta.isEncrypted == true) {
+        portion.decrypt(meta.encryptionKey!!.arrayLimit(), size)
+    } else portion
+}
+
 class EventChunk internal constructor(@IgnoreSchema internal val uReplay: UReplay): ByteSchema() {
     val id: String by bytes(string)
     val group: String by bytes(string)
@@ -51,12 +58,7 @@ class EventChunk internal constructor(@IgnoreSchema internal val uReplay: URepla
     val endTime: Int by bytes(int32)
     val sizeInBytes: Int by bytes(int32)
     val data: ByteBuffer by bytes {
-        val encryptedBuffer = slice(sizeInBytes)
-        if (uReplay.meta.isEncrypted == true) {
-            encryptedBuffer.decrypt(uReplay.meta.encryptionKey!!.arrayLimit(), sizeInBytes)
-        } else {
-            encryptedBuffer
-        }
+        uReplay.decrypt(this, sizeInBytes)
     }
 }
 

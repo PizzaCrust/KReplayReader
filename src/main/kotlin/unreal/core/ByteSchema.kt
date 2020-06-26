@@ -93,6 +93,7 @@ val string: ByteReadBlock<String> = { string }
 val guid: ByteReadBlock<String> = { guid() }
 val byte: ByteReadBlock<Byte> = { read(1)[0] }
 val float: ByteReadBlock<Float> = { float }
+val intPacked: ByteReadBlock<Int> = { intPacked }
 
 class TestSchema: ByteSchema() {
     val fileMagic: Int by bytes(int32)
@@ -110,10 +111,7 @@ fun main() {
         read(ByteBuffer(File("season12.replay")))
         //chunks.forEach(::println)
         //events.forEach(::println)
-        events.forEach(::println)
-        eliminations.forEach(::println)
-        println(teamStats)
-        println(matchStats)
+        data.forEach(::println)
         //(chunks.filter { it.type == ReplayChunkType.EVENT }.forEach(::println))
 
         /*

@@ -49,6 +49,9 @@ class UReplay: ByteSchema() {
     val events: List<EventChunk>
         get() = chunks.filter { it.type == ReplayChunkType.EVENT }.map { it.asEvent }
 
+    val data: List<DataChunk>
+        get() = chunks.filter { it.type == ReplayChunkType.REPLAY_DATA }.map { it.asData }
+
     override fun read(buffer: ByteBuffer, rewind: Boolean) {
         super.read(buffer, false)
         meta = Meta(this).apply {

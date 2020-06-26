@@ -85,3 +85,13 @@ enum class ReplayEventType(val value: String) {
         fun fromId(str: String) = values().firstOrNull { str.endsWith(it.value) } ?: UNKNOWN
     }
 }
+
+enum class ReplayHeaderFlags(private val value: Int) {
+    NONE(0),
+    CLIENT_RECORDED(1 shl 0),
+    HAS_STREAMING_FIXES( 1 shl 1),
+    DELTA_CHECKPOINTS(1 shl 2),
+    GAME_SPECIFIC_FRAME_DATA(1 shl 3);
+
+    fun hasFlag(flags: Int) = (flags.and(this.value)) != 0
+}

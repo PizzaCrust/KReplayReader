@@ -5,6 +5,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
+import kotlin.experimental.and
 
 fun ByteBuffer(vararg array: Byte, order: ByteOrder = ByteOrder.LITTLE_ENDIAN): ByteBuffer = ByteBuffer.wrap(array).order(order)
 
@@ -25,6 +26,20 @@ val ByteBuffer.string: String
         if (length < 0) throw UnsupportedOperationException("Archive is corrupted")
         val data = (if (isUnicode) read(length * 2) else read(length))
         return String(data).trim { it <= ' ' }.replace(("\u0000").toRegex(), "")
+    }
+
+val ByteBuffer.intPacked: Int
+    get() {
+        var value = 0
+        var count = 0.toByte()
+        var remaining = true
+        while (remaining) {
+            var nextByte = read(1)[0]
+            remaining = (nextByte.and(1.toByte()) == 1.toByte())
+            nextByte = nextByte.toInt().shr(1).toByte()
+            value += nextByte.toInt().shl(7 * count++)
+        }
+        return value
     }
 
 fun ByteBuffer.guid(size: Int = 16) = read(size).joinToString("") { "%02x".format(it) }
