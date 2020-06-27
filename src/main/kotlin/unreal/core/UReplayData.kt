@@ -105,7 +105,7 @@ class DataChunk internal constructor(uReplay: UReplay): ByteSchema() {
         val demoFrame = mutableListOf<DemoFrame>()
         while (decompressedBuffer.hasRemaining()) {
             demoFrame.add(DemoFrame(uReplay).apply {
-                read(this@bytes)
+                read(decompressedBuffer)
             })
         }
         demoFrame
